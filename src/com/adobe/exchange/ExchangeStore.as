@@ -26,7 +26,7 @@ package com.adobe.exchange
 		public function ExchangeStore()
 		{
 			dateFormatter = new DateFormatter();
-			dateFormatter.formatString = "YYYY/MM/DD";
+			dateFormatter.formatString = "YYYY/MM/DD JJ:NN:SS";
 		}
 		
 		public function set requestConfig(requestConfig:RequestConfig):void
@@ -59,8 +59,6 @@ package com.adobe.exchange
 
 		private function onResponseStatus(e:HTTPStatusEvent):void
 		{
-			trace("onResponseStatus");
-			trace(e.status);
 		}
 
 		private function onIOError(e:IOErrorEvent):void
