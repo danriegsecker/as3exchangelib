@@ -9,6 +9,8 @@ package com.adobe.exchange.events
 		public static const EXCHANGE_APPOINTMENT_LIST_EVENT:String = "exchangeAppointmentListEvent";
 
 		public var appointments:Array;
+		public var startDate:Date;
+		public var endDate:Date;
 
 		public function ExchangeAppointmentListEvent()
 		{
