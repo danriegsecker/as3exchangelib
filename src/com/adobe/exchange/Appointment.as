@@ -14,6 +14,7 @@ package com.adobe.exchange
 		private var _organizer:Person;
 		private var _location:String;
 		private var _allDay:Boolean;
+		private var _reminderOffset:uint;
 		private var _recurring:Boolean;
 		private var _repeatRule:String;
 		private var _textDescription:String;
@@ -33,6 +34,7 @@ package com.adobe.exchange
 				   "optionalAttendees: ["+this.optionalAttendees+"], " +
 				   "location: ["+this.location+"], " +
 				   "allDay: ["+this.allDay+"], " +
+				   "reminderOffset: ["+this.reminderOffset+"], " +
 				   "recurring: ["+this.recurring+"], " +
 				   "repeatRule: ["+this.repeatRule+"], " +
 				   "textDescription: ["+this.textDescription+"], " +
@@ -177,6 +179,16 @@ package com.adobe.exchange
 		public function get allDay():Boolean
 		{
 			return this._allDay;
+		}
+
+		public function set reminderOffset(reminderOffset:uint):void
+		{
+			this._reminderOffset = reminderOffset;
+		}
+
+		public function get reminderOffset():uint
+		{
+			return this._reminderOffset;
 		}
 
 		public function set recurring(recurring:Boolean):void
