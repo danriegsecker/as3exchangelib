@@ -72,6 +72,9 @@ package com.adobe.exchange
 
 						appt.allDay = (responseNode.dav_ns::propstat.dav_ns::prop.cal_ns::alldayevent == "1") ? true : false;
 
+						var reminderOffsetStr:String = Util.nullCheck(responseNode.dav_ns::propstat.dav_ns::prop.cal_ns::reminderoffset);
+						appt.reminderOffset = (reminderOffsetStr != null) ? uint(reminderOffsetStr) : 0;
+
 						appt.recurring = (responseNode.dav_ns::propstat.dav_ns::prop.mapi_ns::is_recurring == "1") ? true : false;
 
 						appt.textDescription = Util.nullCheck(responseNode.dav_ns::propstat.dav_ns::prop.email_ns::textdescription);
@@ -84,6 +87,7 @@ package com.adobe.exchange
 						appts.push(appt);
 					}
 					var eale:ExchangeAppointmentListEvent = new ExchangeAppointmentListEvent();
+					eale.startDate = startDate;
 					eale.appointments = appts;
 					dispatchEvent(eale);
 				});
