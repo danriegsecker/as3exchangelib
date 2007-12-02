@@ -43,7 +43,7 @@ package com.adobe.exchange
 		{
 			var req:URLRequest = new URLRequest(url);
 			req.manageCookies = true;
-			req.shouldAuthenticate = true;
+			req.authenticate = true;
 			req.requestHeaders.push(new URLRequestHeader("Content-Type", "text/xml"));
 			req.data = body;
 			return req;
