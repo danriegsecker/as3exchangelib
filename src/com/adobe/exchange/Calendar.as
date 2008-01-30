@@ -70,6 +70,7 @@ package com.adobe.exchange
 					var appts:Array = new Array();
 					var stream:URLStream = e.target as URLStream;
 					var responseStr:String = stream.readUTFBytes(stream.bytesAvailable);
+					stream.close();
 					var responseXML:XML = new XML(responseStr);
 					var nsd:Array = responseXML.namespaceDeclarations();
 					for each (var responseNode:XML in responseXML..dav_ns::response)
