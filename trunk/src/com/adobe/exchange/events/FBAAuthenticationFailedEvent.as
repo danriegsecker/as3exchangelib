@@ -32,73 +32,19 @@
     OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOURCE CODE, EVEN IF
     ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package com.adobe.exchange
+package com.adobe.exchange.events
 {
-	import flash.net.URLRequest;
+	import flash.events.Event;
 	
-	public class RequestConfig
+	public class FBAAuthenticationFailedEvent
+		extends Event
 	{
-		private var _domain:String;
-		private var _username:String;
-		private var _password:String;
-		private var _server:String;
-		private var _secure:Boolean;
-		private var _protocol:String = "http";
-		
-		public function set username(username:String):void
+
+		public static const FBA_AUTHENTICATION_FAILED_EVENT:String = "fbaAuthenticationFailedEvent";
+
+		public function FBAAuthenticationFailedEvent()
 		{
-			this._username = username;
+			super(FBAAuthenticationFailedEvent.FBA_AUTHENTICATION_FAILED_EVENT);
 		}
-
-		public function get username():String
-		{
-			return this._username;
-		}
-
-		public function set password(password:String):void
-		{
-			this._password = password;
-		}
-
-		public function get password():String
-		{
-			return this._password;
-		}
-
-		public function set domain(domain:String):void
-		{
-			this._domain = domain;
-		}
-
-		public function get domain():String
-		{
-			return this._domain;
-		}
-
-		public function set server(server:String):void
-		{
-			this._server = server;
-		}
-
-		public function get server():String
-		{
-			return this._server;
-		}
-
-		public function set secure(secure:Boolean):void
-		{
-			this._secure = secure;
-			this._protocol = (secure) ? "https" : "http";
-		}
-
-		public function get secure():Boolean
-		{
-			return this._secure;
-		}		
-
-		public function get protocol():String
-		{
-			return this._protocol;
-		}		
 	}
 }

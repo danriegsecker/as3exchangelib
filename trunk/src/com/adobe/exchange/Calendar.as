@@ -34,7 +34,7 @@
 */
 package com.adobe.exchange
 {
-	[Event(name="exchangeErrorEvent",       type="com.adobe.exchange.events.ExchangeErrorEvent")]
+	[Event(name="exchangeErrorEvent",           type="com.adobe.exchange.events.ExchangeErrorEvent")]
 	[Event(name="exchangeAppointmentListEvent", type="com.adobe.exchange.events.ExchangeAppointmentListEvent")]
 
 	import com.adobe.exchange.events.*;
@@ -67,6 +67,7 @@ package com.adobe.exchange
 			stream.addEventListener(Event.COMPLETE,
 				function(e:Event):void
 				{
+					if (lastResponseCode != 207) return;
 					var appts:Array = new Array();
 					var stream:URLStream = e.target as URLStream;
 					var responseStr:String = stream.readUTFBytes(stream.bytesAvailable);

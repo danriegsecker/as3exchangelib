@@ -34,21 +34,30 @@
 */
 package com.adobe.exchange
 {
-	[Event(name="ioError", type="flash.events.IOErrorEvent")]
+	[Event(name="ioError",               type="flash.events.IOErrorEvent")]
+	[Event(name="fbaChallengeEvent",     type="com.adobe.exchange.events.FBAChallengeEvent")]
+	[Event(name="fbaAuthenticatedEvent", type="com.adobe.exchange.events.FBAAuthenticatedEvent")]
 
-	import mx.formatters.DateFormatter;
-	import flash.net.URLRequest;
-	import flash.net.URLStream;
-	import flash.events.IOErrorEvent;
-	import flash.events.HTTPStatusEvent;
-	import flash.net.URLRequestHeader;
+	import com.adobe.exchange.events.FBAAuthenticatedEvent;
+	import com.adobe.exchange.events.FBAAuthenticationFailedEvent;
+	import com.adobe.exchange.events.FBAChallengeEvent;
+	
+	import flash.events.Event;
 	import flash.events.EventDispatcher;
+	import flash.events.HTTPStatusEvent;
+	import flash.events.IOErrorEvent;
+	import flash.net.URLRequest;
+	import flash.net.URLRequestHeader;
+	import flash.net.URLStream;
+	
+	import mx.formatters.DateFormatter;
 
 	public class ExchangeStore
 		extends EventDispatcher
 	{
 		private var _requestConfig:RequestConfig;
 		protected var dateFormatter:DateFormatter;
+		protected var lastResponseCode:uint;
 
 		protected var dav_ns:Namespace         = new Namespace("DAV:");
 		protected var xml_ns:Namespace         = new Namespace("xml:");
@@ -93,6 +102,63 @@ package com.adobe.exchange
 
 		private function onResponseStatus(e:HTTPStatusEvent):void
 		{
+			this.lastResponseCode = e.status;
+			if (e.status == 440) // Form-based authentication is turned on.  Authentic with for cookies.
+			{
+				this.dispatchEvent(new FBAChallengeEvent());
+			}
+		}
+
+		public function fba():void
+		{
+			var url:String = (this.requestConfig.protocol) +
+							 "://" +
+							 this.requestConfig.server +
+							 "/exchweb/bin/auth/owaauth.dll";
+			var tmpUsername:String = (this.requestConfig.domain != null) ? this.requestConfig.domain + "%5C": "";
+			tmpUsername += this.requestConfig.username;
+			var body:String = "destination=" + 
+							  escape(this.requestConfig.protocol + "://" +
+							  this.requestConfig.server + "/exchange/" + this.requestConfig.username + "/Calendar") +
+							  "&username=" + tmpUsername +
+							  "&password=" + this.requestConfig.password +
+							  "&SubmitCreds=Log+On&forcedownlevel=0&trusted=0";
+			var req:URLRequest = new URLRequest(url);
+			req.manageCookies = true;
+			req.method = "POST";
+			req.contentType = "application/x-www-form-urlencoded";
+			req.data = body;
+			var stream:URLStream = this.getURLStream();
+			stream.addEventListener(Event.COMPLETE,
+				function(e:Event):void
+				{
+					stream.close();
+				});
+			stream.addEventListener(HTTPStatusEvent.HTTP_RESPONSE_STATUS,
+				function(e:HTTPStatusEvent):void
+				{
+					var success:Boolean = false;
+					if (e.status == 200)
+					{
+						for each (var header:URLRequestHeader in e.responseHeaders)
+						{
+							if (header.name == "Set-Cookie")
+							{
+								var value:String = header.value;
+								if (value.indexOf("OwaLbe") != -1 && value.indexOf("sessionid") != -1)
+								{
+									success = true;
+									dispatchEvent(new FBAAuthenticatedEvent());
+								}
+							}
+						}
+					}
+					if (!success)
+					{
+						dispatchEvent(new FBAAuthenticationFailedEvent());
+					}
+				});
+			stream.load(req);
 		}
 
 		private function onIOError(e:IOErrorEvent):void
