@@ -145,7 +145,7 @@ package com.adobe.exchange
 							if (header.name == "Set-Cookie")
 							{
 								var value:String = header.value;
-								if (value.indexOf("OwaLbe") != -1 && value.indexOf("sessionid") != -1)
+								if (value.indexOf("sessionid") != -1)
 								{
 									success = true;
 									dispatchEvent(new FBAAuthenticatedEvent());
