@@ -121,7 +121,7 @@ package com.adobe.exchange
 							  escape(this.requestConfig.protocol + "://" +
 							  this.requestConfig.server + "/exchange/" + this.requestConfig.username + "/Calendar") +
 							  "&username=" + tmpUsername +
-							  "&password=" + this.requestConfig.password +
+							  "&password=" + escape(this.requestConfig.password) +
 							  "&SubmitCreds=Log+On&forcedownlevel=0&trusted=0";
 			var req:URLRequest = new URLRequest(url);
 			req.manageCookies = true;
