@@ -162,5 +162,66 @@ package com.adobe.exchange
 					</d:searchrequest>;		
 		}
 		
+		private function getCreateEventXML():XML{
+			return <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				               xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+				               xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+				               xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">
+					  <soap:Body>
+					    <CreateItem xmlns="http://schemas.microsoft.com/exchange/services/2006/messages"
+					                xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types" 
+					                SendMeetingInvitations="SendToAllAndSaveCopy" >
+					      <SavedItemFolderId>
+					        <t:DistinguishedFolderId Id="calendar"/>
+					      </SavedItemFolderId>
+					      <Items>
+					        <t:CalendarItem xmlns="http://schemas.microsoft.com/exchange/services/2006/types">
+					          <Subject>Planning Meeting</Subject>
+					          <Body BodyType="Text">Plan the agenda for next week's meeting.</Body>
+					          <ReminderIsSet>true</ReminderIsSet>
+					          <ReminderMinutesBeforeStart>60</ReminderMinutesBeforeStart>
+					          <Start>2006-11-02T14:00:00</Start>
+					          <End>2006-11-02T15:00:00</End>
+					          <IsAllDayEvent>false</IsAllDayEvent>
+					          <LegacyFreeBusyStatus>Busy</LegacyFreeBusyStatus>
+					          <Location>Conference Room 721</Location>
+					          <RequiredAttendees>
+					            <Attendee>
+					              <Mailbox>
+					                <EmailAddress>rj.owen@effectiveui.com</EmailAddress>
+					              </Mailbox>
+					            </Attendee>
+					          </RequiredAttendees>
+					        </t:CalendarItem>
+					      </Items>
+					    </CreateItem>
+					  </soap:Body>
+					</soap:Envelope>;
+		}
+		
+		private function createAppointment(username:String = null):void{
+			var url:String = (this.requestConfig.protocol) +
+							 "://" +
+							 this.requestConfig.server +
+							 "/exchange/" +
+							 ((username != null) ? username : this.requestConfig.username) +
+							 "/Calendar";
+
+			var req:URLRequest = this.getURLRequest(url, getCreateEventXML());
+			req.method = "POST";
+			var stream:URLStream = this.getURLStream();
+			stream.addEventListener(Event.COMPLETE,
+				function(e:Event):void
+				{
+					trace("created appointment!");
+					var stream:URLStream = e.target as URLStream;
+					var responseStr:String = stream.readUTFBytes(stream.bytesAvailable);
+					stream.close();
+					var responseXML:XML = new XML(responseStr);
+					var nsd:Array = responseXML.namespaceDeclarations();
+				});
+			stream.load(req);
+		}
+		
 	}
 }
