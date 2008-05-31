@@ -32,78 +32,24 @@
     OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOURCE CODE, EVEN IF
     ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package com.adobe.exchange
+package com.adobe.exchange.events
 {
-	import flash.net.URLRequest;
+	import com.adobe.exchange.Appointment;
 	
-	public class RequestConfig
+	import flash.events.Event;
+	
+	public class ExchangeAppointmentEvent
+		extends Event
 	{
-		private var _domain:String;
-		private var _username:String;
-		private var _password:String;
-		private var _server:String;
-		private var _secure:Boolean;
-		private var _protocol:String = "http";
-		
-		public function set username(username:String):void
-		{
-			this._username = username;
-		}
 
-		public function get username():String
-		{
-			return this._username;
-		}
+		public static const EXCHANGE_APPOINTMENT_CREATED:String = "exchangeAppointmentCreated";
+		public static const EXCHANGE_APPOINTMENT_REMOVED:String = "exchangeAppointmentRemoved";
 
-		public function set password(password:String):void
-		{
-			this._password = password;
-		}
+		public var appointment:Appointment;
 
-		public function get password():String
+		public function ExchangeAppointmentEvent(type:String)
 		{
-			return this._password;
+			super(type);
 		}
-
-		public function set domain(domain:String):void
-		{
-			this._domain = domain;
-		}
-
-		public function get domain():String
-		{
-			return this._domain;
-		}
-
-		public function set server(server:String):void
-		{
-			this._server = server;
-		}
-
-		public function get server():String
-		{
-			return this._server;
-		}
-
-		public function set secure(secure:Boolean):void
-		{
-			this._secure = secure;
-			this._protocol = (secure) ? "https" : "http";
-		}
-
-		public function get secure():Boolean
-		{
-			return this._secure;
-		}		
-
-		public function get protocol():String
-		{
-			return this._protocol;
-		}
-		
-		public function get url():String
-		{
-			return (_protocol) + "://" + _server + "/exchange/" + (_username) + "/Calendar";
-		}	
 	}
 }

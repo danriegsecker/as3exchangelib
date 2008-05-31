@@ -42,6 +42,7 @@ package com.adobe.exchange
 	
 	import flash.events.Event;
 	import flash.net.URLRequest;
+	import flash.net.URLRequestMethod;
 	import flash.net.URLStream;
 
 	public class Calendar
@@ -162,11 +163,11 @@ package com.adobe.exchange
 					</d:searchrequest>;		
 		}
 		
-		private function getCreateEventXML():XML{
+		private function getCreateAppointmentXML(appointment:Appointment):XML{
 			return <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-				               xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-				               xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
-				               xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">
+				               	  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+				                  xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+				                  xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">
 					  <soap:Body>
 					    <CreateItem xmlns="http://schemas.microsoft.com/exchange/services/2006/messages"
 					                xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types" 
@@ -184,11 +185,11 @@ package com.adobe.exchange
 					          <End>2006-11-02T15:00:00</End>
 					          <IsAllDayEvent>false</IsAllDayEvent>
 					          <LegacyFreeBusyStatus>Busy</LegacyFreeBusyStatus>
-					          <Location>Conference Room 721</Location>
+					          <Location>Conference Room Fishbowl</Location>
 					          <RequiredAttendees>
 					            <Attendee>
 					              <Mailbox>
-					                <EmailAddress>rj.owen@effectiveui.com</EmailAddress>
+					                <EmailAddress>drew.mclean@effectiveui.com</EmailAddress>
 					              </Mailbox>
 					            </Attendee>
 					          </RequiredAttendees>
@@ -199,26 +200,24 @@ package com.adobe.exchange
 					</soap:Envelope>;
 		}
 		
-		private function createAppointment(username:String = null):void{
-			var url:String = (this.requestConfig.protocol) +
-							 "://" +
-							 this.requestConfig.server +
-							 "/exchange/" +
-							 ((username != null) ? username : this.requestConfig.username) +
-							 "/Calendar";
+		public function createAppointment(appointment:Appointment, username:String=null):void{
+			var url:String = this.requestConfig.url;
 
-			var req:URLRequest = this.getURLRequest(url, getCreateEventXML());
-			req.method = "POST";
+			var req:URLRequest = this.getURLRequest(url, getCreateAppointmentXML(appointment), true);
+			req.method = URLRequestMethod.POST;
 			var stream:URLStream = this.getURLStream();
 			stream.addEventListener(Event.COMPLETE,
 				function(e:Event):void
 				{
-					trace("created appointment!");
-					var stream:URLStream = e.target as URLStream;
-					var responseStr:String = stream.readUTFBytes(stream.bytesAvailable);
-					stream.close();
-					var responseXML:XML = new XML(responseStr);
-					var nsd:Array = responseXML.namespaceDeclarations();
+				//	if (lastResponseCode != 207) return;
+					if (lastResponseCode != 403) 
+					{
+						var stream:URLStream = e.target as URLStream;
+						var responseStr:String = stream.readUTFBytes(stream.bytesAvailable);
+						var responseXML:XML = new XML(responseStr);
+						var nsd:Array = responseXML.namespaceDeclarations();
+					}
+					(e.target as URLStream).close();
 				});
 			stream.load(req);
 		}
