@@ -82,11 +82,11 @@ package com.adobe.exchange
 			return this._requestConfig;
 		}
 		
-		protected function getURLRequest(url:String, body:XML):URLRequest
+		protected function getURLRequest(url:String, body:XML, authenticate:Boolean=true):URLRequest
 		{
 			var req:URLRequest = new URLRequest(url);
 			req.manageCookies = true;
-			req.authenticate = true;
+			req.authenticate = authenticate;
 			req.requestHeaders.push(new URLRequestHeader("Content-Type", "text/xml"));
 			req.data = body;
 			return req;
@@ -103,9 +103,14 @@ package com.adobe.exchange
 		private function onResponseStatus(e:HTTPStatusEvent):void
 		{
 			this.lastResponseCode = e.status;
+		//	trace("ExchangeStore::onResponseStatus: "+e.status);
 			if (e.status == 440) // Form-based authentication is turned on.  Authentic with for cookies.
 			{
 				this.dispatchEvent(new FBAChallengeEvent());
+			}
+			if (e.status == 403)
+			{
+				trace("HTTP Status code 403. Forbidden");
 			}
 		}
 
