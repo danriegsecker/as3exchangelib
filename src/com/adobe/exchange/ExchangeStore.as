@@ -65,6 +65,7 @@ package com.adobe.exchange
 		protected var email_ns:Namespace       = new Namespace("urn:schemas:httpmail:");
 		protected var mail_header_ns:Namespace = new Namespace("urn:schemas:mailheader:");
 		protected var mapi_ns:Namespace        = new Namespace("http://schemas.microsoft.com/mapi/");
+		protected var contacts_ns:Namespace    = new Namespace("urn:schemas:contacts:");
 
 		public function ExchangeStore()
 		{
@@ -103,8 +104,7 @@ package com.adobe.exchange
 		private function onResponseStatus(e:HTTPStatusEvent):void
 		{
 			this.lastResponseCode = e.status;
-		//	trace("ExchangeStore::onResponseStatus: "+e.status);
-			if (e.status == 440) // Form-based authentication is turned on.  Authentic with for cookies.
+			if (e.status == 440) // Form-based authentication is turned on.  Authentic with cookies.
 			{
 				this.dispatchEvent(new FBAChallengeEvent());
 			}
@@ -149,8 +149,8 @@ package com.adobe.exchange
 						{
 							if (header.name == "Set-Cookie")
 							{
-								var value:String = header.value;
-								if (value.indexOf("sessionid") != -1)
+								var value:String = header.value.toLowerCase();
+								if (value.indexOf("sessionid") != -1 || value.indexOf("usercontext") != -1)
 								{
 									success = true;
 									dispatchEvent(new FBAAuthenticatedEvent());

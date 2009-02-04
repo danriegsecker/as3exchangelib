@@ -32,18 +32,21 @@
     OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOURCE CODE, EVEN IF
     ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package com.adobe.exchange
+package com.adobe.exchange.events
 {
-	public class Person
+	import flash.events.Event;
+	
+	public class ExchangeContactListEvent
+		extends Event
 	{
-		public var firstName:String;
-		public var lastName:String;
-		public var fullName:String;
-		public var emailAddress:String;
-		public var telephoneNumber:String;
-		public var organization:String;
-		public var title:String;
-		public var homeAddress:String;
-		public var workAddress:String;
+
+		public static const EXCHANGE_CONTACT_LIST_EVENT:String = "exchangeContactListEvent";
+
+		public var entries:Array;
+
+		public function ExchangeContactListEvent()
+		{
+			super(ExchangeContactListEvent.EXCHANGE_CONTACT_LIST_EVENT);
+		}
 	}
 }
